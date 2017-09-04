@@ -7,7 +7,7 @@
 #define HASH_MAX_GROWTH 4096
 #define HASH_MAX_CHAIN 8
 
-ThunderHash *thunder_hash_init(int capacity)
+ThunderHash *thunder_hash_init(uint32_t capacity)
 {
     if (capacity < HASH_MIN_CAPACITY)
     {

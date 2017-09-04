@@ -45,22 +45,24 @@ void thunder_hash_test()
 
 void thunder_list_test()
 {
-    ThunderList *list = thunder_list_init(10);
+    ThunderList list = { 0 };
+    thunder_list_init(&list, sizeof(int));
 
     for (int i = 0; i < 30; ++i)
     {
         values[i] = i;
-        thunder_list_add(list, (void *)&values[i]);
+        thunder_list_add(&list, (void *)&values[i]);
     }
+
     for (int i = 10; i < 20; ++i)
     {
-        thunder_list_remove(list, &values[i]);
+        thunder_list_remove_at(&list, i);
     }
 
     printf("ThunderList\n");
     for (int i = 0; i < 30; ++i)
     {
-        int *value = (int *)thunder_list_read(list, i);
+        int *value = (int *)thunder_list_read(&list, i);
         if (value != NULL)
         {
             printf("[%d] %d\n", i, *value);
@@ -70,6 +72,4 @@ void thunder_list_test()
             printf("[%d] NULL\n", i);
         }
     }
-
-    thunder_list_free(list);
 }

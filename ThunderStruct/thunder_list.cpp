@@ -1,42 +1,19 @@
 #include <stdlib.h>
 #include <stdio.h>
+#include <string.h>
 
 #define LIST_MIN_CAPACITY 16
 #define LIST_MAX_GROWTH 4096
-
-ThunderList *thunder_list_init(uint32_t capacity)
-{
-    if (capacity < LIST_MIN_CAPACITY)
-    {
-        capacity = LIST_MIN_CAPACITY;
-    }
-    else
-    {
-        // Find next power of 2
-        uint32_t power = LIST_MIN_CAPACITY;
-        while (power < capacity)
-        {
-            power <<= 1;
-        }
-        capacity = power;
-    }
-
-    ThunderList *list = (ThunderList *)calloc(1, sizeof(ThunderList));
-    list->size = 0;
-    list->capacity = capacity;
-    list->elements = (void **)calloc(list->capacity, sizeof(void *));
-    return list;
-}
-
-ThunderList *thunder_list_init()
-{
-    return thunder_list_init(LIST_MIN_CAPACITY);
-}
 
 void thunder_list_grow(ThunderList *list)
 {
     printf("ThunderList: Growing from %d elements to ", list->capacity);
     // Double size until MAX_GROWTH, then allocate in fixed-size chunks
+
+    if (list->capacity == 0)
+    {
+        list->capacity = LIST_MIN_CAPACITY;
+    }
     if (list->capacity < LIST_MAX_GROWTH)
     {
         list->capacity = list->capacity * 2;
@@ -47,32 +24,31 @@ void thunder_list_grow(ThunderList *list)
     }
     printf("%d elements.\n", list->capacity);
 
-    void **old_list = list->elements;
-    list->elements = (void **)calloc(list->capacity, sizeof(void *));
+    list->data = realloc(list->data, list->capacity * list->size);
+}
 
-    for (uint32_t i = 0; i < list->size; ++i)
-    {
-        list->elements[i] = old_list[i];
-    }
-
-    free(old_list);
+void thunder_list_init(ThunderList *list, uint32_t size)
+{
+    list->size = size;
+    thunder_list_grow(list);
 }
 
 void thunder_list_add(ThunderList *list, void *value)
 {
-    if (list->size == list->capacity)
+    if (list->count == list->capacity)
     {
         thunder_list_grow(list);
     }
 
-    list->elements[list->size++] = value;
+    void *dst = (char *)list->data + list->size * list->count++;
+    memcpy(dst, value, list->size);
 }
 
 void *thunder_list_read(ThunderList *list, uint32_t index)
 {
-    if (index >= 0 && index < list->size)
+    if (index >= 0 && index < list->count)
     {
-        return list->elements[index];
+        return (char *)list->data + list->size * index;
     }
     else
     {
@@ -82,23 +58,23 @@ void *thunder_list_read(ThunderList *list, uint32_t index)
 
 void thunder_list_remove_at(ThunderList *list, uint32_t index)
 {
-    list->elements[index] = list->elements[--list->size];
+    void *at = (char *)list->data + list->size * index;
+    void *last = (char *)list->data + list->size * --list->count;
+    memcpy(at, last, list->size);
 }
 
+/*
+// TODO: Requires pointer to comparator, e.g. equals(void *a, void *b)
 void thunder_list_remove(ThunderList *list, void *value)
 {
-    for (uint32_t index = 0; index < list->size; ++index)
+    for (uint32_t index = 0; index < list->count; ++index)
     {
-        if (list->elements[index] == value)
+        void *val = list->data + list->size * index;
+        if (val == value)
         {
             thunder_list_remove_at(list, index);
             break;
         }
     }
 }
-
-void thunder_list_free(ThunderList *list)
-{
-    free(list->elements);
-    free(list);
-}
+*/

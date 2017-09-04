@@ -21,13 +21,13 @@
     <ClCompile Include="thunder.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="thunder_test.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="thunder_hash.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="thunder_list.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="thunder_test.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
